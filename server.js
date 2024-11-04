@@ -7,7 +7,7 @@ const errorHandler = require('./src/middlewares/errorHandler');
 require('dotenv').config();
 
 
-const serviceAccount = require('./config/online-marketplace-2b6af-firebase-adminsdk-4z5u4@online-marketplace-2b6a.json');
+const serviceAccount = require('./Config/online-marketplace-2b6af-firebase-adminsdk-4z5u4-c1b69585f8.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -18,6 +18,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
+app.get("/", (req, res) => {
+    res.send("Welcome to the Online MarketPlace!");
+  });
 
 app.use('/api/customers', customerRoutes);
 
