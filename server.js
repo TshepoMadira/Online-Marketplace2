@@ -7,7 +7,7 @@ const errorHandler = require('./src/middlewares/errorHandler');
 require('dotenv').config();
 
 
-const serviceAccount = require('./Config/online-marketplace-2b6af-firebase-adminsdk-4z5u4-c1b69585f8.json');
+const serviceAccount = require('./config/online-marketplace-2b6af-firebase-adminsdk-4z5u4-c1b69585f8.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
