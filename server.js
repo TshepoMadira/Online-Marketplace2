@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 const cors = require('cors');
-const customerRoutes = require('./src/routes/customerRoutes');
+const productRoutes = require('./src/routes/productsRoutes');
 const errorHandler = require('./src/middlewares/errorHandler');
 require('dotenv').config();
 
@@ -11,7 +11,7 @@ const serviceAccount = require('./config/online-marketplace-2b6af-firebase-admin
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
+  databaseURL: `https://online-marketplace-2b6af.firebaseio.com`
 });
 
 const app = express();
@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
     res.send("Welcome to the Online MarketPlace!");
   });
 
-app.use('/api/customers', customerRoutes);
+app.use('/api/products', productRoutes);
 
 
 app.use(errorHandler);
