@@ -8,7 +8,49 @@ const productSchema = Joi.object({
   description: Joi.string().optional(),
   size: Joi.string().valid('Small', 'Medium', 'Large').optional(),
   color: Joi.string().min(1).optional(), 
+  category: Joi.string().valid('Boys Clothes', 'Women Clothes', 'Kids Clothes', 'Accessories', 'Technology').optional(),
 });
+
+
+
+exports.registerUser = async (req, res) => {
+  const { error } = userSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
+  const { email, password } = req.body;
+  try {
+    const userRecord = await admin.auth().createUser({ email, password });
+    res.status(201).json({ uid: userRecord.uid });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+exports.loginUser = async (req, res) => {
+ 
+  const { email, password } = req.body;
+  const { error } = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
+  }).validate({ email, password });
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  try {
+    
+    const userRecord = await admin.auth().getUserByEmail(email);
+    
+
+    const token = await admin.auth().createCustomToken(userRecord.uid);
+    
+   
+    res.json({ token });
+  } catch (error) {
+
+    res.status(400).json({ error: 'Invalid email or password' });
+  }
+};
 
 
 exports.addProduct = async (req, res) => {
@@ -20,12 +62,12 @@ exports.addProduct = async (req, res) => {
     return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { name, price, description, size, color } = req.body;
+  const { name, price, description, size, color, category } = req.body;
 
   try {
     const productRef = admin.firestore().collection('products').doc();
     await productRef.set({ name, price, description, size, color });
-    res.status(201).json({ id: productRef.id, name, price, description, size, color });
+    res.status(201).json({ id: productRef.id, name, price, description, size, color , category});
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
