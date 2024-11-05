@@ -1,25 +1,31 @@
 const admin = require('firebase-admin');
 const Joi = require('joi');
 
+
 const productSchema = Joi.object({
   name: Joi.string().min(1).required(),
   price: Joi.number().greater(0).required(),
   description: Joi.string().optional(),
+  size: Joi.string().valid('Small', 'Medium', 'Large').optional(),
+  color: Joi.string().min(1).optional(), 
 });
+
+
 exports.addProduct = async (req, res) => {
   console.log("Request Body:", req.body);
 
   const { error } = productSchema.validate(req.body);
   if (error) {
-    console.log("Validation Error:", error.details);  
+    console.log("Validation Error:", error.details);
     return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { name, price, description } = req.body;
+  const { name, price, description, size, color } = req.body;
+
   try {
     const productRef = admin.firestore().collection('products').doc();
-    await productRef.set({ name, price, description });
-    res.status(201).json({ id: productRef.id, name, price, description });
+    await productRef.set({ name, price, description, size, color });
+    res.status(201).json({ id: productRef.id, name, price, description, size, color });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -35,6 +41,8 @@ exports.listProducts = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
 
@@ -45,6 +53,8 @@ exports.updateProduct = async (req, res) => {
     name: Joi.string().min(1).optional(),
     price: Joi.number().greater(0).optional(),
     description: Joi.string().optional(),
+    size: Joi.string().valid('Small', 'Medium', 'Large').optional(), 
+    color: Joi.string().min(1).optional(), 
   });
 
   const { error } = productUpdateSchema.validate(updateData);
